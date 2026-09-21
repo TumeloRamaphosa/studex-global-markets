@@ -1,0 +1,17 @@
+name = "studex-global-markets"
+type = "javascript"
+main = "dist/index.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "studex-global-markets"
+route = "markets.studex.group/*"
+zone_id = "your-zone-id"
+
+[[env.production.routes]]
+pattern = "markets.studex.group/*"
+zone_name = "studex.group"
+
+[build]
+command = "npm run build"
+cwd = "./"

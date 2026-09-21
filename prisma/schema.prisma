@@ -1,0 +1,167 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Tier {
+  ASPIRE
+  ENGAGE
+  SCALE
+  ELITE
+  GHOST
+}
+
+enum Vertical {
+  MEAT
+  COFFEE
+  WHEAT
+}
+
+enum CommodityStatus {
+  AVAILABLE
+  NEGOTIATING
+  SOLD
+  ARCHIVED
+}
+
+enum AccessLevel {
+  NONE
+  VIEW_ONLY
+  TRADE
+  MANAGE
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  tier          Tier      @default(ASPIRE)
+  company       String?
+  country       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  account       Account?
+  session       Session[]
+  verticals     UserVerticalAccess[]
+  transactions  Transaction[]
+  messages      Message[]
+
+  @@index([email])
+  @@index([tier])
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @unique
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserVerticalAccess {
+  id        String   @id @default(cuid())
+  userId    String
+  vertical  Vertical
+  access    AccessLevel
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vertical])
+}
+
+model Commodity {
+  id          String   @id @default(cuid())
+  vertical    Vertical
+  name        String
+  description String?
+  quantity    Float
+  unit        String   // "kg", "bags", "tons"
+  pricePerUnit Float
+  currency    String   @default("USD")
+  origin      String?  // origin country
+  quality     String?  // A, B, C grade
+  certification String? // Halaal, Organic, Fair Trade
+  images      String[] // JSON array of image URLs
+  status      CommodityStatus @default(AVAILABLE)
+  createdBy   String   // user ID
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transactions Transaction[]
+
+  @@index([vertical])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  commodityId String
+  quantity    Float
+  totalPrice  Float
+  currency    String   @default("USD")
+  status      String   @default("pending") // pending, completed, cancelled
+  tier        Tier     // buyer's tier at time of transaction
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id])
+  commodity Commodity @relation(fields: [commodityId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String
+  body      String
+  sender    String   // 'user' or 'admin'
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  event     String
+  userId    String?
+  tier      Tier?
+  vertical  Vertical?
+  data      String?  // JSON
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([createdAt])
+}

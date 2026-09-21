@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --obsidian: #0a0a0a;
+  --gold: #c9a84c;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-slate-950 text-white;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Bebas Neue';
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Space Mono';
+  font-display: swap;
+}

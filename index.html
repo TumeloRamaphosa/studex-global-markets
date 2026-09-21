@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studex Global Markets — Cross-Border Settlement Exchange</title>
+<meta name="description" content="A cross-border commodity trade and settlement exchange for coffee, meat, oats and wheat. Origin to destination, documented and settled.">
+<link rel="icon" href="assets/studex-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#FFF; --cream:#F8F4E8; --cream-deep:#EFE9D6;
+  --obsidian:#0F0F0F; --obsidian-soft:#1C1C1C; --slate:#4A4A4A; --slate-light:#8A8A8A;
+  --gold:#C9A84C; --gold-deep:#9A7F32; --gold-soft:#E5CE7A;
+  --up:#2D7A4A; --up-soft:#E8F2EB;
+  --down:#B5443A; --down-soft:#F5E7E5;
+  --warn:#A8761B; --warn-soft:#FBF2DF;
+  --hairline:#E5E2D8; --hairline-soft:#F0EDE3;
+  --genesis:url('assets/genesis.jpg');
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--obsidian);background:var(--white);-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" on,"cv05" on}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
+
+/* ---------- status strip ---------- */
+.strip{background:var(--obsidian);color:var(--cream);font-size:11px;letter-spacing:.04em;padding:0 40px;height:34px;display:flex;align-items:center;gap:28px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.strip b{color:var(--gold);font-weight:600}
+.strip .sep{color:#3A3A3A}
+
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--hairline)}
+.nav-inner{max-width:1440px;margin:0 auto;padding:0 40px;height:66px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.brand img{width:38px;height:38px;border-radius:50%;box-shadow:0 2px 6px rgba(15,15,15,.08)}
+.brand-name{display:block;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:17px;line-height:1.1}
+.brand-tag{display:block;font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-light);margin-top:3px}
+.nav-links{display:flex;gap:30px}
+.nav-link{font-size:12px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--slate);padding:6px 0;transition:color .2s}
+.nav-link:hover{color:var(--obsidian)}
+.live{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--up);text-transform:uppercase;flex-shrink:0}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--up);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ---------- hero ---------- */
+.hero{background:var(--cream);padding:76px 40px 84px;position:relative;overflow:hidden;border-bottom:1px solid var(--hairline)}
+.hero::before{content:'';position:absolute;inset:0;background-image:var(--genesis);background-size:cover;background-position:center 42%;opacity:.15;pointer-events:none;
+  mask-image:radial-gradient(ellipse 70% 80% at center,#000 20%,transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 70% 80% at center,#000 20%,transparent 78%)}
+.hero-inner{max-width:1080px;margin:0 auto;text-align:center;position:relative;z-index:2}
+.hero-badge{display:inline-block;margin-bottom:24px;padding:6px 14px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.35);border-radius:100px;font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-deep)}
+.hero-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(44px,7.5vw,84px);line-height:1;letter-spacing:-.03em;margin-bottom:22px}
+.hero-em{color:var(--gold-deep);font-style:italic;font-weight:400}
+.hero-sub{font-size:17px;line-height:1.6;color:var(--slate);max-width:660px;margin:0 auto 40px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hairline);border:1px solid var(--hairline);max-width:880px;margin:0 auto 36px;border-radius:4px;overflow:hidden}
+.stat{background:var(--white);padding:24px 16px;text-align:center}
+.stat-num{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;letter-spacing:-.02em;line-height:1}
+.stat-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-light);margin-top:9px}
+.stat-note{font-size:9px;color:var(--slate-light);margin-top:4px;font-style:italic}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta{display:inline-flex;align-items:center;gap:11px;padding:16px 30px;background:var(--obsidian);color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;border-radius:4px;border:1px solid var(--obsidian);transition:all .25s}
+.cta:hover{background:var(--gold);color:var(--obsidian);transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,168,76,.25)}
+.cta.ghost{background:transparent;color:var(--obsidian);border-color:var(--obsidian)}
+.cta.ghost:hover{background:var(--obsidian);color:var(--gold)}
+.cta-arrow{transition:transform .25s}
+.cta:hover .cta-arrow{transform:translateX(4px)}
+
+/* ---------- sections ---------- */
+.section{padding:84px 40px}
+.section.alt{background:var(--cream);border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline)}
+.container{max-width:1320px;margin:0 auto}
+.sec-header{margin-bottom:40px;max-width:760px}
+.sec-header.center{text-align:center;margin-left:auto;margin-right:auto}
+.sec-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(32px,4.5vw,48px);letter-spacing:-.02em;line-height:1.05;margin:10px 0 14px}
+.sec-em{color:var(--gold-deep);font-style:italic}
+.sec-sub{font-size:15px;color:var(--slate);line-height:1.62}
+
+.divider{height:120px;background-image:var(--genesis);background-size:cover;background-position:center 45%;position:relative}
+.divider::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,var(--white) 0%,rgba(255,255,255,.55) 30%,rgba(248,244,232,.55) 70%,var(--cream) 100%)}
+
+/* ---------- desk tabs ---------- */
+.desks{display:flex;gap:2px;background:var(--hairline);border:1px solid var(--hairline);border-radius:4px;padding:2px;margin-bottom:8px;flex-wrap:wrap}
+.desk{flex:1;min-width:120px;padding:13px 12px;background:var(--white);border-radius:3px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--slate);transition:all .18s;text-align:center}
+.desk:hover{color:var(--obsidian)}
+.desk[aria-selected="true"]{background:var(--obsidian);color:var(--gold)}
+.desk .n{font-family:'JetBrains Mono',monospace;font-size:10px;opacity:.6;margin-left:6px}
+.filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:18px 0 24px;font-size:11px}
+.filter-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-light)}
+.chip{padding:6px 12px;border:1px solid var(--hairline);border-radius:100px;font-size:11px;font-weight:500;color:var(--slate);transition:all .18s;background:var(--white)}
+.chip:hover{border-color:var(--gold)}
+.chip[aria-pressed="true"]{background:var(--obsidian);color:var(--gold);border-color:var(--obsidian)}
+
+/* ---------- lot cards ---------- */
+.lots{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.lot{background:var(--white);border:1px solid var(--hairline);border-radius:6px;padding:20px;transition:all .22s;display:flex;flex-direction:column}
+.lot:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,15,15,.06)}
+.lot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.lot-id{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.02em}
+.lot-origin{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-light);margin-top:3px}
+.stage{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 7px;border-radius:3px;letter-spacing:.08em;white-space:nowrap;text-transform:uppercase}
+.stage.shipping{background:var(--up-soft);color:var(--up)}
+.stage.contracted{background:var(--obsidian);color:var(--gold)}
+.stage.negotiating{background:var(--warn-soft);color:var(--warn)}
+.stage.quoting{background:var(--cream-deep);color:var(--gold-deep)}
+.stage.contacted{background:var(--hairline-soft);color:var(--slate)}
+.stage.prospect{background:var(--white);color:var(--slate-light);border:1px solid var(--hairline)}
+.stage.engage{background:var(--cream);color:var(--slate);border:1px solid var(--hairline)}
+.stage.core{background:var(--gold);color:var(--obsidian)}
+.lot-name{font-size:14px;font-weight:600;line-height:1.3;margin-bottom:3px}
+.lot-seller{font-size:11px;color:var(--slate);margin-bottom:14px}
+.lot-price{display:flex;align-items:baseline;justify-content:space-between;padding:11px 0;border-top:1px dashed var(--hairline);border-bottom:1px dashed var(--hairline);margin-bottom:12px}
+.price-v{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;letter-spacing:-.01em}
+.price-v.tbd{font-size:12px;font-weight:500;color:var(--slate-light);font-style:italic;font-family:'Inter',sans-serif}
+.price-t{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--gold-deep);letter-spacing:.08em}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin-bottom:14px}
+.spec{display:flex;justify-content:space-between;gap:8px;font-size:11px}
+.spec-k{color:var(--slate-light);white-space:nowrap}
+.spec-v{font-family:'JetBrains Mono',monospace;font-weight:500;text-align:right}
+.lot-foot{margin-top:auto;padding-top:12px;border-top:1px solid var(--hairline-soft);display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:10px}
+.route{font-family:'JetBrains Mono',monospace;color:var(--slate);letter-spacing:-.01em}
+.rail{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 7px;border-radius:3px;letter-spacing:.06em;white-space:nowrap}
+.rail.a{background:rgba(45,122,74,.1);color:var(--up);border:1px solid rgba(45,122,74,.3)}
+.rail.b{background:var(--cream-deep);color:var(--gold-deep);border:1px solid rgba(201,168,76,.4)}
+.rail.d{background:var(--hairline-soft);color:var(--slate-light);border:1px solid var(--hairline)}
+.empty{grid-column:1/-1;padding:56px;text-align:center;color:var(--slate-light);font-size:14px;font-style:italic;border:1px dashed var(--hairline);border-radius:6px}
+
+/* ---------- corridors ---------- */
+.corridors{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.corr{background:var(--white);border:1px solid var(--hairline);border-radius:6px;padding:22px;position:relative;transition:all .22s}
+.corr:hover{border-color:var(--gold);box-shadow:0 12px 30px rgba(15,15,15,.06)}
+.corr-id{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--gold-deep);letter-spacing:.12em;margin-bottom:12px}
+.leg{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.node{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:4px 8px;background:var(--cream);border:1px solid var(--hairline);border-radius:3px}
+.node.o{background:var(--obsidian);color:var(--gold);border-color:var(--obsidian)}
+.node.d{background:var(--white);border-color:var(--gold);color:var(--gold-deep)}
+.arr{color:var(--slate-light);font-size:11px}
+.corr-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px;line-height:1.25;margin-bottom:12px}
+.corr-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:11px;padding-top:12px;border-top:1px dashed var(--hairline)}
+
+/* ---------- settlement (dark band) ---------- */
+.dark{background:var(--obsidian);color:var(--cream);padding:84px 40px}
+.dark .sec-title{color:var(--cream)}
+.dark .sec-em{color:var(--gold)}
+.dark .sec-sub{color:var(--slate-light)}
+.dark .eyebrow{color:var(--gold)}
+.rails{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+.rail-card{background:var(--obsidian-soft);border:1px solid #2E2E2E;border-radius:6px;padding:26px}
+.rail-card.on{border-color:rgba(45,122,74,.5)}
+.rail-card.doc{border-color:rgba(201,168,76,.4)}
+.rail-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:12px}
+.rail-name{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:23px;color:var(--cream)}
+.rail-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:.08em;white-space:nowrap}
+.rail-card.on .rail-tag{background:rgba(45,122,74,.2);color:#6FBF8E;border:1px solid rgba(45,122,74,.5)}
+.rail-card.doc .rail-tag{background:rgba(201,168,76,.15);color:var(--gold-soft);border:1px solid rgba(201,168,76,.4)}
+.rail-when{font-size:11px;color:var(--slate-light);margin-bottom:20px;line-height:1.5}
+.flow{display:flex;flex-direction:column;gap:0;margin-bottom:18px}
+.flow-step{display:flex;align-items:flex-start;gap:12px;padding:9px 0}
+.flow-n{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;width:20px;height:20px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#2E2E2E;color:var(--gold);margin-top:1px}
+.flow-t{font-size:12px;line-height:1.45;color:#D8D3C4}
+.flow-t b{color:var(--cream);font-weight:600}
+.flow-t span{display:block;font-size:10.5px;color:var(--slate-light);margin-top:2px}
+.rail-foot{padding-top:16px;border-top:1px solid #2E2E2E;font-size:11px;color:var(--slate-light);line-height:1.55}
+.rail-foot b{color:var(--gold-soft);font-weight:600}
+
+.lifecycle{background:var(--obsidian-soft);border:1px solid #2E2E2E;border-radius:6px;padding:26px}
+.lc-track{display:flex;gap:2px;flex-wrap:wrap;margin-top:16px}
+.lc{flex:1;min-width:96px;padding:12px 8px;background:#242424;border-radius:3px;text-align:center}
+.lc.gate{background:rgba(168,118,27,.22);border:1px solid rgba(201,168,76,.45)}
+.lc-n{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--slate-light);display:block;margin-bottom:5px}
+.lc-t{font-size:10.5px;font-weight:600;color:var(--cream);line-height:1.3}
+.lc.gate .lc-t{color:var(--gold-soft)}
+
+/* ---------- agents ---------- */
+.agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:36px}
+.agent{background:var(--white);border:1px solid var(--hairline);border-radius:6px;padding:20px;transition:all .22s;position:relative}
+.agent:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 12px 30px rgba(15,15,15,.06)}
+.agent.gate{border-color:rgba(168,118,27,.5);background:linear-gradient(180deg,#FEFBF4 0%,var(--white) 60%)}
+.agent-state{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--gold-deep);letter-spacing:.14em;margin-bottom:10px}
+.agent-name{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;line-height:1.15;margin-bottom:3px}
+.agent-role{font-size:9.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--slate-light);margin-bottom:12px}
+.agent-does{font-size:12px;line-height:1.5;color:var(--slate);margin-bottom:12px}
+.agent-limit{font-size:11px;line-height:1.45;color:var(--slate);padding-top:11px;border-top:1px dashed var(--hairline)}
+.agent-limit b{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);display:block;margin-bottom:3px}
+.agent.gate .agent-limit b{color:var(--warn)}
+.halt{position:absolute;top:16px;right:16px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:3px 6px;border-radius:3px;background:var(--warn-soft);color:var(--warn);border:1px solid rgba(168,118,27,.4);letter-spacing:.08em}
+
+.runtime{background:var(--white);border:1px solid var(--hairline);border-radius:6px;padding:28px}
+.rt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.rt{padding:20px;background:var(--cream);border:1px solid var(--hairline);border-radius:5px}
+.rt-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.rt-name{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px}
+.rt-sub{font-weight:400;font-size:10px;color:var(--slate-light)}
+.rt-verdict{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:700;padding:3px 7px;border-radius:3px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.rt-verdict.adopt{background:var(--up-soft);color:var(--up)}
+.rt-verdict.ref{background:var(--cream-deep);color:var(--gold-deep)}
+.rt-verdict.block{background:var(--down-soft);color:var(--down)}
+.rt-body{font-size:12px;line-height:1.55;color:var(--slate);margin-bottom:11px}
+.rt-caveat{font-size:11px;line-height:1.5;color:var(--slate);padding-top:10px;border-top:1px dashed var(--hairline)}
+.rt-caveat b{color:var(--obsidian)}
+.rt-gap{margin-top:22px;padding-top:18px;border-top:1px solid var(--hairline);font-size:12.5px;line-height:1.6;color:var(--slate)}
+.rt-gap b{color:var(--obsidian)}
+
+/* ---------- counterparties ---------- */
+.cp-table-wrap{overflow-x:auto;border:1px solid var(--hairline);border-radius:6px;background:var(--white)}
+.cp-table{width:100%;border-collapse:collapse;font-size:12px;min-width:880px}
+.cp-table thead{background:var(--cream)}
+.cp-table th{text-align:left;padding:13px 14px;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--slate-light);border-bottom:1px solid var(--hairline);white-space:nowrap}
+.cp-table td{padding:12px 14px;border-bottom:1px solid var(--hairline-soft);color:var(--slate);vertical-align:top}
+.cp-table tr:last-child td{border-bottom:none}
+.cp-table tr:hover td{background:#FDFCF8}
+.cp-name{font-weight:600;color:var(--obsidian);font-size:12.5px}
+.cp-loc{font-size:10px;color:var(--slate-light);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.scr{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 7px;border-radius:3px;letter-spacing:.06em;white-space:nowrap;display:inline-block}
+.scr.clear{background:var(--up-soft);color:var(--up)}
+.scr.req{background:var(--warn-soft);color:var(--warn)}
+.scr.na{background:var(--hairline-soft);color:var(--slate-light)}
+.da{display:flex;align-items:center;gap:8px;min-width:96px}
+.da-bar{flex:1;height:4px;background:var(--hairline-soft);border-radius:2px;overflow:hidden}
+.da-fill{height:100%;background:linear-gradient(90deg,var(--gold-deep),var(--gold));border-radius:2px}
+.da-n{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px}
+
+/* ---------- notice ---------- */
+.notice{max-width:1320px;margin:0 auto;background:var(--warn-soft);border:1px solid rgba(168,118,27,.3);border-left:3px solid var(--warn);border-radius:4px;padding:18px 22px;font-size:12.5px;line-height:1.6;color:#6B4C10}
+.notice b{color:#4A340A}
+.notice + .notice{margin-top:12px}
+
+/* ---------- footer ---------- */
+footer{background:var(--obsidian);color:var(--cream);padding:60px 40px 32px}
+.foot-inner{max-width:1320px;margin:0 auto}
+.foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;padding-bottom:32px;border-bottom:1px solid rgba(201,168,76,.2)}
+.foot-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:26px;color:var(--gold);margin-bottom:10px;letter-spacing:-.01em}
+.foot-sub{font-size:12.5px;color:var(--slate-light);line-height:1.6;max-width:330px}
+.foot-col h4{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:13px}
+.foot-col a,.foot-col span{display:block;font-size:12.5px;color:var(--slate-light);margin-bottom:7px;transition:color .2s}
+.foot-col a:hover{color:var(--cream)}
+.foot-bot{padding-top:24px;display:flex;justify-content:space-between;gap:16px;font-size:11px;color:var(--slate-light);letter-spacing:.04em;flex-wrap:wrap}
+
+@media (max-width:1024px){
+  .rails{grid-template-columns:1fr}
+  .foot-top{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .strip,.nav-inner{padding:0 18px}
+  .nav-links{display:none}
+  .section,.dark{padding:56px 18px}
+  .hero{padding:52px 18px 60px}
+  .specs{grid-template-columns:1fr}
+  .corr-meta{grid-template-columns:1fr}
+  .foot-top{grid-template-columns:1fr;gap:28px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="strip" role="status">
+  <span><b>DESKS</b> Coffee · Meat · Oats &amp; Grain · Wheat</span><span class="sep">│</span>
+  <span><b>CORRIDORS</b> 7 mapped</span><span class="sep">│</span>
+  <span><b>IN TRANSIT</b> CONT-002 · 26 MT ET specialty → St Petersburg</span><span class="sep">│</span>
+  <span><b>CONTRACTED</b> CONT-001 · 20 MT UG robusta → Novorossiysk</span><span class="sep">│</span>
+  <span><b>RAIL A</b> live</span><span class="sep">│</span>
+  <span><b>RAIL B</b> screening gate active</span>
+</div>
+
+<nav class="nav"><div class="nav-inner">
+  <a href="#top" class="brand">
+    <img src="assets/studex-mark.png" alt="Studex Global Markets">
+    <span><span class="brand-name">Studex Global Markets</span><span class="brand-tag">Settlement Exchange</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="#board" class="nav-link">Board</a>
+    <a href="#corridors" class="nav-link">Corridors</a>
+    <a href="#settlement" class="nav-link">Settlement</a>
+    <a href="#agents" class="nav-link">Agents</a>
+    <a href="#counterparties" class="nav-link">Counterparties</a>
+  </div>
+  <div class="live"><span class="live-dot"></span><span>Desks Open</span></div>
+</div></nav>
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-badge">Cross-Border Commodity Exchange</div>
+    <h1 class="hero-title">Origin to destination,<br><span class="hero-em">documented and settled.</span></h1>
+    <p class="hero-sub">Four desks — coffee, meat, oats and wheat — moving between East Africa, Russia, the Gulf and Southern Africa. Every lot carries its grade, its route, its incoterm and its settlement rail before it is offered. Studex is the connective tissue: we originate, document, screen and settle.</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">Trading Desks</div><div class="stat-note">coffee · meat · grain · wheat</div></div>
+      <div class="stat"><div class="stat-num">7</div><div class="stat-label">Corridors Mapped</div><div class="stat-note">3 continents</div></div>
+      <div class="stat"><div class="stat-num">34</div><div class="stat-label">Origin Counterparties</div><div class="stat-note">4 coffee-producing countries</div></div>
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label">Settlement Rails</div><div class="stat-note">on-chain · documentary</div></div>
+    </div>
+    <div class="cta-row">
+      <a href="#board" class="cta"><span>Open the Board</span><span class="cta-arrow">→</span></a>
+      <a href="#settlement" class="cta ghost"><span>How Settlement Works</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:34px;padding-bottom:0">
+  <div class="notice">
+    <b>Operating console, not a settled-trade record.</b> Every figure below is drawn from Studex origination files and counterparty catalogues, and each lot is tagged with its true pipeline stage — <span class="mono">PROSPECT</span> through <span class="mono">SHIPPING</span>. Prices are indicative FOB/CIF bands or landed costs from supplier quotations, not executed trades. No lot shown has a countersigned contract. Specifications marked <em>on request</em> are supplier-confirmed as available but not yet quoted.
+  </div>
+</section>
+
+<section class="section" id="board">
+  <div class="container">
+    <div class="sec-header">
+      <div class="eyebrow">The Board</div>
+      <h2 class="sec-title">Tradeable <span class="sec-em">Lots</span></h2>
+      <p class="sec-sub">Grade, volume, price basis, route and rail on every card. Coffee is graded to the NAEB scale — screen size, cup score and defect count map to a price band and a buyer tier. Grain, meat and wheat carry supplier specification and GOST/Halaal status where certified.</p>
+    </div>
+
+    <div class="desks" role="tablist" aria-label="Trading desks">
+      <button class="desk" role="tab" aria-selected="true" data-desk="all">All Desks<span class="n" data-count="all"></span></button>
+      <button class="desk" role="tab" aria-selected="false" data-desk="coffee">Coffee<span class="n" data-count="coffee"></span></button>
+      <button class="desk" role="tab" aria-selected="false" data-desk="meat">Meat &amp; Poultry<span class="n" data-count="meat"></span></button>
+      <button class="desk" role="tab" aria-selected="false" data-desk="grain">Oats &amp; Grain<span class="n" data-count="grain"></span></button>
+      <button class="desk" role="tab" aria-selected="false" data-desk="wheat">Wheat<span class="n" data-count="wheat"></span></button>
+    </div>
+
+    <div class="filters">
+      <span class="filter-label">Stage</span>
+      <button class="chip" aria-pressed="true" data-stage="all">All</button>
+      <button class="chip" aria-pressed="false" data-stage="live">Contracted &amp; shipping</button>
+      <button class="chip" aria-pressed="false" data-stage="active">In negotiation</button>
+      <button class="chip" aria-pressed="false" data-stage="early">Early pipeline</button>
+      <span class="filter-label" style="margin-left:14px">Rail</span>
+      <button class="chip" aria-pressed="true" data-rail="all">All</button>
+      <button class="chip" aria-pressed="false" data-rail="A">Rail A · on-chain</button>
+      <button class="chip" aria-pressed="false" data-rail="B">Rail B · documentary</button>
+    </div>
+
+    <div class="lots" id="lots"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section alt" id="corridors">
+  <div class="container">
+    <div class="sec-header">
+      <div class="eyebrow">Physical Routes</div>
+      <h2 class="sec-title">Trade <span class="sec-em">Corridors</span></h2>
+      <p class="sec-sub">A corridor is the unit we actually manage: an origin, a load port, a discharge port, an incoterm, a lead time and a settlement rail. The rail is assigned at the corridor level, not the lot level — because it is the counterparty jurisdiction, not the commodity, that decides how money is allowed to move.</p>
+    </div>
+    <div class="corridors" id="corridor-grid"></div>
+  </div>
+</section>
+
+<section class="dark" id="settlement">
+  <div class="container">
+    <div class="sec-header">
+      <div class="eyebrow">Settlement Architecture</div>
+      <h2 class="sec-title">Two rails, <span class="sec-em">chosen by corridor</span></h2>
+      <p class="sec-sub">Agricultural goods are broadly exempt from the sanctions programmes that touch our Russian corridors — the constraint has never been the cargo, it is the banking. That is a real reason to want faster rails, and a bad reason to route every corridor through one. Studex assigns the rail per corridor and gates the documentary ones behind screening.</p>
+    </div>
+
+    <div class="rails">
+      <div class="rail-card on">
+        <div class="rail-head"><span class="rail-name">Rail A — On-chain</span><span class="rail-tag">T+0 / T+1</span></div>
+        <p class="rail-when">Assigned where no corridor participant sits in a restricted jurisdiction. East African origin to African, Gulf or EU destination. This is where stablecoin settlement earns its keep: it removes correspondent-bank latency on exactly the routes where correspondent banking is slowest and most expensive.</p>
+        <div class="flow">
+          <div class="flow-step"><span class="flow-n">1</span><span class="flow-t"><b>Member funds in fiat</b><span>ZAR · USD · EUR via a regulated on-ramp</span></span></div>
+          <div class="flow-step"><span class="flow-n">2</span><span class="flow-t"><b>Converted to USDC on Base</b><span>Regulated exchange or licensed CASP. Never a peer-to-peer desk.</span></span></div>
+          <div class="flow-step"><span class="flow-n">3</span><span class="flow-t"><b>Swapped for STDX utility credit</b><span>The internal unit of account across the ecosystem</span></span></div>
+          <div class="flow-step"><span class="flow-n">4</span><span class="flow-t"><b>Held in member Studex wallet</b><span>Spendable on membership, AI and cloud usage, or exchange settlement</span></span></div>
+          <div class="flow-step"><span class="flow-n">5</span><span class="flow-t"><b>Released against inspection certificate</b><span>SGS or Bureau Veritas at load or discharge triggers release</span></span></div>
+        </div>
+        <div class="rail-foot"><b>Open items.</b> FSCA crypto-asset service provider licensing on the South African leg, and SARB exchange-control reporting on any cross-border flow. Both are workable; neither is done. Treat Rail A as design-complete and licence-pending.</div>
+      </div>
+
+      <div class="rail-card doc">
+        <div class="rail-head"><span class="rail-name">Rail B — Documentary</span><span class="rail-tag">30–90 days</span></div>
+        <p class="rail-when">Mandatory for every corridor with a restricted-jurisdiction participant — which today means all Russian-origin grain, wheat, meat and poultry, and all coffee sold into Russian buyers. Slower by design. The delay is where the screening happens, and the paper is what makes the trade defensible.</p>
+        <div class="flow">
+          <div class="flow-step"><span class="flow-n">1</span><span class="flow-t"><b>Counterparty screening</b><span>OFAC SDN · EU consolidated · UK HMT. Blocking gate — no instrument issues before it clears.</span></span></div>
+          <div class="flow-step"><span class="flow-n">2</span><span class="flow-t"><b>Instrument sized to ticket</b><span>LC above $50–200K · Gulf intermediary $100–500K · TT below $50–100K</span></span></div>
+          <div class="flow-step"><span class="flow-n">3</span><span class="flow-t"><b>Documentary set assembled</b><span>Bill of lading · certificate of origin · phytosanitary · GOST-R or Halaal where applicable</span></span></div>
+          <div class="flow-step"><span class="flow-n">4</span><span class="flow-t"><b>Third-party inspection</b><span>SGS or Bureau Veritas. Lloyds marine cover in place.</span></span></div>
+          <div class="flow-step"><span class="flow-n">5</span><span class="flow-t"><b>Presentation and payment</b><span>Against compliant documents at the issuing bank</span></span></div>
+        </div>
+        <div class="rail-foot"><b>Non-negotiable.</b> Rail B corridors never route through Rail A, and no corridor may be re-assigned from B to A to shorten settlement. Bridging a restricted-jurisdiction payment onto stablecoin rails is the specific pattern regulators treat as evasion, regardless of whether the cargo is exempt.</div>
+      </div>
+    </div>
+
+    <div class="lifecycle">
+      <div class="eyebrow">Contract Lifecycle</div>
+      <div class="sec-sub" style="margin-top:8px;font-size:13px">Ten states. Screening is state 04 on every corridor and blocking on Rail B; no instrument is issued and no cargo is booked until it clears.</div>
+      <div class="lc-track">
+        <div class="lc"><span class="lc-n">01</span><span class="lc-t">Enquiry</span></div>
+        <div class="lc"><span class="lc-n">02</span><span class="lc-t">Offer &amp; spec</span></div>
+        <div class="lc"><span class="lc-n">03</span><span class="lc-t">Contract</span></div>
+        <div class="lc gate"><span class="lc-n">04</span><span class="lc-t">Screening gate</span></div>
+        <div class="lc"><span class="lc-n">05</span><span class="lc-t">Instrument</span></div>
+        <div class="lc"><span class="lc-n">06</span><span class="lc-t">Documents</span></div>
+        <div class="lc"><span class="lc-n">07</span><span class="lc-t">Shipment</span></div>
+        <div class="lc"><span class="lc-n">08</span><span class="lc-t">Inspection</span></div>
+        <div class="lc"><span class="lc-n">09</span><span class="lc-t">Discharge</span></div>
+        <div class="lc"><span class="lc-n">10</span><span class="lc-t">Settlement</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="agents">
+  <div class="container">
+    <div class="sec-header">
+      <div class="eyebrow">Agent Fleet</div>
+      <h2 class="sec-title">Who runs <span class="sec-em">the desk</span></h2>
+      <p class="sec-sub">The exchange is operated by agents, one per lifecycle state, each with a defined input, a defined output and a defined limit. Two of them can stop a trade. None of them can move money on their own — settlement release requires an inspection certificate and, on Rail B, a cleared screening record that an agent may write but never overwrite.</p>
+    </div>
+    <div class="agents" id="agent-grid"></div>
+
+    <div class="runtime">
+      <div class="eyebrow" style="margin-bottom:14px">Runtime Assessment</div>
+      <div class="rt-grid">
+        <div class="rt">
+          <div class="rt-head"><span class="rt-name">OpenFang</span><span class="rt-verdict adopt">Adopt as runtime</span></div>
+          <p class="rt-body">Rust agent OS — kernel, runtime, memory, skill host, ~40 channel adapters, WASM sandboxing and Merkle audit trails. Domain-neutral, which is exactly why it fits: no equities bias to fight. The channel adapters matter more than they look — WhatsApp, Telegram and email <em>are</em> how origination and broker traffic actually move in East Africa and the Gulf.</p>
+          <p class="rt-caveat"><b>Cost:</b> pre-1.0, breaking changes between minor versions — pin commits. Every custom skill is Rust or a WASM boundary; that is a staffing commitment if the team is Python or TypeScript.</p>
+        </div>
+        <div class="rt">
+          <div class="rt-head"><span class="rt-name">ai-hedge-fund</span><span class="rt-verdict ref">Pattern reference only</span></div>
+          <p class="rt-body">Its value is the topology, not the code: many opinionated analysts score the same object in parallel, a risk gate filters, one allocator decides. That shape transfers cleanly to scoring a lot or a counterparty from several angles. The agents themselves do not — they are stock-picking heuristics keyed to a ticker.</p>
+          <p class="rt-caveat"><b>Mismatch:</b> physical coffee has no ticker and no continuous mark. Every agent's input contract would be rewritten. Also self-described as educational, not for real trading.</p>
+        </div>
+        <div class="rt">
+          <div class="rt-head"><span class="rt-name">cashclaw <span class="rt-sub">(npm package)</span></span><span class="rt-verdict block">Excluded from settlement</span></div>
+          <p class="rt-body">Not to be confused with our own Cashclaw agent below. The package is client tooling for a freelance marketplace — thirteen skills, all producing digital marketing deliverables. Its one transferable idea is Guard: YAML cost caps, recursion detection and tool firewalls, a sensible control model for any agent touching money.</p>
+          <p class="rt-caveat"><b>Hard block:</b> its rail is Stripe plus autonomous agent-to-agent USDC. Pointing that at a Russia-leg corridor is the precise exposure Rail B exists to prevent. Reference Guard; wire nothing.</p>
+        </div>
+      </div>
+      <p class="rt-gap"><b>The gap none of the three fills:</b> origination, trade documents — bill of lading, phytosanitary, certificate of origin, GOST-R, Halaal — incoterms, logistics and trade credit. That layer is ours to build regardless of which runtime we pick.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="counterparties">
+  <div class="container">
+    <div class="sec-header">
+      <div class="eyebrow">Registry</div>
+      <h2 class="sec-title">Counterparties &amp; <span class="sec-em">Screening</span></h2>
+      <p class="sec-sub">Deal-ability is our composite of capability, documentation readiness, network position and infrastructure density. Screening status is separate and absolute — a counterparty can score well on deal-ability and still be gated. The two never trade off against each other.</p>
+    </div>
+    <div class="cp-table-wrap">
+      <table class="cp-table">
+        <thead><tr>
+          <th>Counterparty</th><th>Role</th><th>Supplies / Buys</th><th>Desk</th><th>Rail</th><th>Screening</th><th>Deal-Ability</th><th>Stage</th>
+        </tr></thead>
+        <tbody id="cps"></tbody>
+      </table>
+    </div>
+
+    <div class="notice" style="margin-top:24px">
+      <b>Screening is a gate, not a score.</b> <span class="mono">REQUIRED</span> means the counterparty sits in or transacts through a restricted jurisdiction and must clear OFAC SDN, EU consolidated and UK HMT lists — plus a beneficial-ownership check — before any instrument is issued. It is not an allegation about that counterparty; it is the standard our own banking correspondents will apply to us. <span class="mono">CLEAR</span> means screened with no adverse finding on the date shown in the file. Screening is re-run per shipment, never once per relationship.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div>
+        <div class="foot-title">Studex Global Markets</div>
+        <p class="foot-sub">A cross-border settlement exchange for physical agricultural commodities. We originate at source, document to bank standard, screen every counterparty, and settle on the rail the corridor allows.</p>
+      </div>
+      <div class="foot-col"><h4>Desks</h4><a href="#board">Coffee</a><a href="#board">Meat &amp; Poultry</a><a href="#board">Oats &amp; Grain</a><a href="#board">Wheat</a></div>
+      <div class="foot-col"><h4>Platform</h4><a href="#board">The Board</a><a href="#corridors">Corridors</a><a href="#settlement">Settlement</a><a href="#counterparties">Counterparties</a></div>
+      <div class="foot-col"><h4>Contact</h4><a href="mailto:t.ramaphosa@studex.dev">t.ramaphosa@studex.dev</a><span>Johannesburg, South Africa</span><a href="https://studexgroup.com">studexgroup.com</a></div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 Studex Group · All rights reserved</span>
+      <span>Indicative pricing · Not an offer to sell · Subject to screening and availability</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   DATA — mirrors the intended Supabase schema.
+   Replace these arrays with fetch() calls; shapes are 1:1
+   with the tables in docs/DATA-MODEL.md.
+   ============================================================ */
+
+const LOTS = [
+  /* ---------- COFFEE ---------- */
+  {id:"RW-A1-001", desk:"coffee", origin:"Maraba · Southern Rwanda", name:"Rwanda Arabica A1", seller:"Maraba Cooperative",
+   price:"$7.50–12.00", unit:"/kg", basis:"FOB", stage:"negotiating", rail:"B", corridor:"RW→RU",
+   route:"Kigali → Mombasa → Novorossiysk",
+   specs:[["Grade","A1 (NAEB)"],["Screen","18+ mesh"],["Cup score","86+"],["Defects","0–5"],["Capacity","5–15 MT/mo"],["MOQ","1 MT"]]},
+
+  {id:"RW-A2-002", desk:"coffee", origin:"Musanze · Northern Rwanda", name:"Rwanda Arabica A2/A3 — Fair Trade", seller:"Dukunde Kawa Cooperative",
+   price:"$5.50–6.50", unit:"/kg", basis:"FOB", stage:"contacted", rail:"A", corridor:"RW→ZA",
+   route:"Kigali → Mombasa → Durban",
+   specs:[["Grade","A2 / A3"],["Screen","15–18 mesh"],["Cup score","82–85"],["Certification","Fair Trade"],["Capacity","20–40 MT/mo"],["MOQ","5 MT"]]},
+
+  {id:"RW-A2-003", desk:"coffee", origin:"Huye · Southern Rwanda", name:"Rwanda Arabica A2", seller:"Abahuzamugambi Cooperative",
+   price:"$6.00–7.00", unit:"/kg", basis:"FOB", stage:"prospect", rail:"A", corridor:"RW→ZA",
+   route:"Kigali → Mombasa → Durban",
+   specs:[["Grade","A2 (NAEB)"],["Screen","16–18 mesh"],["Cup score","84–85"],["Defects","5–10"],["Capacity","10–20 MT/mo"],["MOQ","5 MT"]]},
+
+  {id:"RW-A3-004", desk:"coffee", origin:"Rubavu · Western Rwanda", name:"Rwanda Arabica A3/FAQ", seller:"Kopeab Cooperative",
+   price:"$4.50–5.50", unit:"/kg", basis:"FOB", stage:"prospect", rail:"B", corridor:"RW→RU",
+   route:"Kigali → Mombasa → Novorossiysk",
+   specs:[["Grade","A3 / FAQ"],["Screen","14–16 mesh"],["Cup score","80–83"],["Defects","10–25"],["Capacity","15–30 MT/mo"],["MOQ","10 MT"]]},
+
+  {id:"ET-G1-005", desk:"coffee", origin:"Aricha Station · Ethiopia", name:"Ethiopia Heirloom Grade 1", seller:"Aricha Washing Station",
+   price:"$4.50–18.00", unit:"/kg", basis:"FOB", stage:"contracted", rail:"B", corridor:"ET→RU",
+   route:"Djibouti → St Petersburg",
+   specs:[["Grade","Heirloom G1"],["Cup score","84–90"],["Process","Washed / natural"],["Container","CONT-002 · 26 MT"],["Buyer","Moscow Commodities"],["MOQ","1 container"]]},
+
+  {id:"UG-ROB-006", desk:"coffee", origin:"Mt Elgon · Uganda", name:"Uganda Robusta — Screen 18", seller:"Olam Uganda",
+   price:"$2.80–4.20", unit:"/kg", basis:"FOB", stage:"contracted", rail:"B", corridor:"UG→RU",
+   route:"Mombasa → Novorossiysk",
+   specs:[["Type","Robusta"],["Region","Bugisu / Mt Elgon"],["Container","CONT-001 · 20 MT"],["Buyer","TBD"],["Margin","$400–1,000/MT"],["MOQ","1 container"]]},
+
+  {id:"TZ-PB-007", desk:"coffee", origin:"Kilimanjaro · Tanzania", name:"Tanzania Peaberry", seller:"KNCU / Kili Coffee",
+   price:"$8.00–14.00", unit:"/kg", basis:"FOB", stage:"quoting", rail:"A", corridor:"TZ→ZA",
+   route:"Dar es Salaam → Durban",
+   specs:[["Grade","Peaberry"],["Cup score","84–87"],["Container","CONT-003 · 18 MT"],["Destination","SA subscription"],["Capacity","On request"],["MOQ","1 container"]]},
+
+  /* ---------- MEAT & POULTRY ---------- */
+  {id:"RU-POU-010", desk:"meat", origin:"Krasnodar · Russia", name:"Frozen Chicken Leg Quarters", seller:"Krasnodar Trade House LLC",
+   price:null, unit:"", basis:"FCA / FOB / CFR / CIF", stage:"contacted", rail:"B", corridor:"RU→ZA-BLK",
+   route:"Novorossiysk → Durban",
+   specs:[["Product","Leg quarters, frozen"],["Specification","On request"],["Packaging","On request"],["Load port","Novorossiysk"],["Container","40ft reefer"],["MOQ","On request"]]},
+
+  {id:"RU-POU-011", desk:"meat", origin:"Krasnodar · Russia", name:"Frozen Whole Spent Hen", seller:"Krasnodar Trade House LLC",
+   price:null, unit:"", basis:"FCA / FOB / CFR / CIF", stage:"contacted", rail:"B", corridor:"RU→ZA-BLK",
+   route:"Novorossiysk → Durban",
+   specs:[["Product","Whole spent hen"],["Weight range","On request"],["Quality","On request"],["Load port","Novorossiysk"],["Container","40ft reefer"],["MOQ","On request"]]},
+
+  {id:"RU-POU-012", desk:"meat", origin:"Krasnodar · Russia", name:"Frozen Chicken Parts &amp; Offal", seller:"Krasnodar Trade House LLC",
+   price:null, unit:"", basis:"FCA / FOB / CFR / CIF", stage:"prospect", rail:"B", corridor:"RU→ZA-BLK",
+   route:"Novorossiysk → Durban",
+   specs:[["Product","Parts &amp; offal"],["Range","On request"],["Specification","On request"],["Load port","Novorossiysk"],["Alt. port","St Petersburg"],["MOQ","On request"]]},
+
+  {id:"RU-PRK-013", desk:"meat", origin:"Krasnodar · Russia", name:"Pork &amp; Pork Offal", seller:"Krasnodar Trade House LLC",
+   price:null, unit:"", basis:"FCA / FOB / CFR / CIF", stage:"prospect", rail:"B", corridor:"RU→ZA-BLK",
+   route:"Novorossiysk → Asia / MENA",
+   specs:[["Product","Pork &amp; offal"],["Range","On request"],["Note","Non-Halaal — excluded from SA Halaal channel"],["Load port","Novorossiysk"],["Container","40ft reefer"],["MOQ","On request"]]},
+
+  {id:"ZA-BEF-014", desk:"meat", origin:"Gauteng · South Africa", name:"Studex Meat — Wagyu / Ankole", seller:"Studex Meat (own vertical)",
+   price:null, unit:"", basis:"Domestic", stage:"quoting", rail:"A", corridor:"ZA-DOM",
+   route:"Domestic — Gauteng",
+   specs:[["Breeds","Wagyu · Ankole"],["Channel","D2C + biltong"],["Export spec","Not yet drafted"],["Halaal","NIHT / MJC route"],["Volume","Not yet quantified"],["MOQ","—"]]},
+
+  /* ---------- OATS & GRAIN ---------- */
+  {id:"RU-OAT-020", desk:"grain", origin:"Chelyabinsk · Russia", name:"Hulled Raw Oats — GOST-R / Halaal", seller:'LLC "Resurs" (Uvelka / Zlak)',
+   price:"$485", unit:"/MT", basis:"Landed Durban", stage:"negotiating", rail:"B", corridor:"RU→ZA-GRN",
+   route:"Chelyabinsk → Vladivostok → Jebel Ali → Durban",
+   specs:[["Moisture","&lt;14%"],["Impurity","&lt;2%"],["Grain size","2.5–3.5 mm"],["Certification","GOST-R + Halaal"],["Packaging","25/50kg PP · 1t bulk"],["MOQ","22 MT (1×20ft)"]]},
+
+  {id:"RU-BKW-021", desk:"grain", origin:"Chelyabinsk · Russia", name:"Roasted Buckwheat Granules", seller:'LLC "Resurs" (Uvelka / Zlak)',
+   price:null, unit:"", basis:"Landed Durban", stage:"quoting", rail:"B", corridor:"RU→ZA-GRN",
+   route:"Chelyabinsk → Vladivostok → Jebel Ali → Durban",
+   specs:[["Product","Caffeine-free grain beverage"],["Volume Y1","50–100 MT"],["Shelf target","R65–85 / 200g"],["Channel","PnP · Woolworths"],["Certification","GOST-R + Halaal"],["MOQ","On request"]]},
+
+  {id:"RU-BAR-022", desk:"grain", origin:"Krasnodar · Russia", name:"Feed Barley", seller:"Krasnodar Trade House LLC",
+   price:null, unit:"", basis:"FCA / FOB / CFR / CIF", stage:"prospect", rail:"B", corridor:"RU→ZA-BLK",
+   route:"Novorossiysk → Durban",
+   specs:[["Product","Barley"],["Quality","On request"],["Bulk","Handysize 25,000 MT"],["Container","20ft 22–24 MT"],["Load port","Novorossiysk"],["MOQ","On request"]]},
+
+  {id:"RU-CRN-023", desk:"grain", origin:"Krasnodar · Russia", name:"Corn / Maize", seller:"Krasnodar Trade House LLC",
+   price:null, unit:"", basis:"FCA / FOB / CFR / CIF", stage:"prospect", rail:"B", corridor:"RU→ZA-BLK",
+   route:"Novorossiysk → Durban",
+   specs:[["Product","Corn / maize"],["Quality","On request"],["Bulk","5,000–50,000 MT"],["Rail option","China overland"],["Load port","Novorossiysk"],["MOQ","On request"]]},
+
+  /* ---------- WHEAT ---------- */
+  {id:"RU-WHT-030", desk:"wheat", origin:"Krasnodar · Russia", name:"Milling Wheat", seller:"Krasnodar Trade House LLC",
+   price:null, unit:"", basis:"FCA / FOB / CFR / CIF", stage:"contacted", rail:"B", corridor:"RU→ZA-BLK",
+   route:"Novorossiysk → Durban",
+   specs:[["Class","Milling"],["Protein / spec","On request"],["Bulk","Handysize 25,000 MT"],["Container","20ft 22–24 MT"],["Alt. port","St Petersburg"],["MOQ","On request"]]},
+
+  {id:"RU-WHT-031", desk:"wheat", origin:"Krasnodar · Russia", name:"Feed Wheat", seller:"Krasnodar Trade House LLC",
+   price:null, unit:"", basis:"FCA / FOB / CFR / CIF", stage:"contacted", rail:"B", corridor:"RU→ZA-BLK",
+   route:"Novorossiysk → Durban",
+   specs:[["Class","Feed"],["Specification","On request"],["Bulk","5,000–50,000 MT"],["Rail option","China overland"],["Load port","Novorossiysk"],["MOQ","On request"]]},
+
+  {id:"ZA-WHT-032", desk:"wheat", origin:"Gauteng · South Africa", name:"Wheat Flour — Consortium Milling", seller:"SIMISA Milling (consortium)",
+   price:null, unit:"", basis:"Ex-mill", stage:"prospect", rail:"A", corridor:"ZA-DOM",
+   route:"Domestic — Gauteng",
+   specs:[["Route","Contingency to grain corridor"],["Partner","SIMISA · Level 1 B-BBEE"],["Stake","4.9% confirmed"],["Spec","Not yet drafted"],["Volume","Not yet quantified"],["MOQ","—"]]}
+];
+
+const CORRIDORS = [
+  {id:"RW→ZA", title:"Rwanda Coffee to Southern Africa", nodes:["Kigali","Mombasa","Durban"],
+   meta:[["Desk","Coffee"],["Incoterm","FOB / CIF"],["Container","20ft ≈ 20 MT"],["Lead time","~60 days"],["Rail","A — on-chain"],["Gate","Standard KYC"]],
+   rail:"A", note:"NAEB export licence, certificate of origin and phytosanitary on every container."},
+
+  {id:"RW→RU", title:"Rwanda Coffee to Russian Buyers", nodes:["Kigali","Mombasa","Novorossiysk"],
+   meta:[["Desk","Coffee"],["Incoterm","FOB / CIF"],["Freight add","$1.50–2.00/kg"],["Lead time","~90 days"],["Rail","B — documentary"],["Gate","OFAC / EU / UK"]],
+   rail:"B", note:"Screening to clear before any instrument issues. PROWTC sits on this corridor as a tier-4 desk with no disclosed end-client."},
+
+  {id:"ET→RU", title:"Ethiopia Specialty to St Petersburg", nodes:["Djibouti","St Petersburg"],
+   meta:[["Desk","Coffee"],["Incoterm","CIF"],["Container","CONT-002 · 26 MT"],["Status","Shipping"],["Rail","B — documentary"],["Buyer","Moscow Commodities"]],
+   rail:"B", note:"The only lot on the board past the shipment gate. Indicative container margin ~16.8%."},
+
+  {id:"UG→RU", title:"Uganda Robusta to Novorossiysk", nodes:["Mombasa","Novorossiysk"],
+   meta:[["Desk","Coffee"],["Incoterm","FOB Mombasa"],["Container","CONT-001 · 20 MT"],["Margin","$400–1,000/MT"],["Rail","B — documentary"],["Buyer","Not yet allocated"]],
+   rail:"B", note:"Contracted at origin with no buyer allocated — the position is long and unhedged until a buyer signs."},
+
+  {id:"TZ→ZA", title:"Tanzania Peaberry to Durban", nodes:["Dar es Salaam","Durban"],
+   meta:[["Desk","Coffee"],["Incoterm","CIF Durban"],["Container","CONT-003 · 18 MT"],["Lead time","~45 days"],["Rail","A — on-chain"],["Use","SA subscription"]],
+   rail:"A", note:"Feeds the domestic subscription book rather than an export buyer."},
+
+  {id:"RU→ZA-GRN", title:"Russian Oats via the Gulf", nodes:["Chelyabinsk","Vladivostok","Jebel Ali","Durban"],
+   meta:[["Desk","Oats &amp; Grain"],["Incoterm","CIF Durban"],["Landed","$485/MT"],["Lead time","Month 3 → 6"],["Rail","B — documentary"],["Intermediary","2.5% Gulf fee"]],
+   rail:"B", note:"FESCO rail to Vladivostok, sea to Jebel Ali for warehousing and settlement, then sea to Durban and inland to Gauteng."},
+
+  {id:"RU→ZA-BLK", title:"Black Sea Bulk — Wheat, Grain, Poultry", nodes:["Krasnodar","Novorossiysk","Durban"],
+   meta:[["Desks","Wheat · Grain · Meat"],["Incoterm","FCA / FOB / CFR / CIF"],["Bulk","Handysize 25,000 MT"],["Reefer","40ft for poultry"],["Rail","B — documentary"],["Alt. port","St Petersburg"]],
+   rail:"B", note:"Single supplier catalogue across four product families. Overland road and rail to China available as an alternate direction."}
+];
+
+const CPS = [
+  {name:"Krasnodar Trade House LLC", loc:"Krasnodar, Russia", role:"Supplier", supplies:"Milling &amp; feed wheat, barley, corn, frozen poultry, pork, sunflower oil, meal &amp; cake, rapeseed, urea", desk:"Wheat · Grain · Meat", rail:"B", scr:"req", da:null, stage:"contacted"},
+  {name:'LLC "Resurs" — Uvelka / Zlak', loc:"Chelyabinsk, Russia", role:"Supplier", supplies:"Hulled oats, buckwheat, cereals, flakes, instant oatmeal", desk:"Oats &amp; Grain", rail:"B", scr:"req", da:null, stage:"negotiating"},
+  {name:"Maraba Cooperative", loc:"Southern Rwanda", role:"Producer", supplies:"Arabica A1/A2 — Red Bourbon, SL28", desk:"Coffee", rail:"A", scr:"clear", da:null, stage:"negotiating"},
+  {name:"Dukunde Kawa Cooperative", loc:"Musanze, Rwanda", role:"Producer", supplies:"Arabica A2/A3, Fair Trade certified", desk:"Coffee", rail:"A", scr:"clear", da:null, stage:"contacted"},
+  {name:"Abahuzamugambi Cooperative", loc:"Huye, Rwanda", role:"Producer", supplies:"Arabica A2", desk:"Coffee", rail:"A", scr:"clear", da:null, stage:"prospect"},
+  {name:"Kopeab Cooperative", loc:"Rubavu, Rwanda", role:"Producer", supplies:"Arabica A3 / FAQ", desk:"Coffee", rail:"B", scr:"clear", da:null, stage:"prospect"},
+  {name:"NAEB", loc:"Kigali, Rwanda", role:"Regulator", supplies:"Export licence, grading, phytosanitary, certificate of origin", desk:"Coffee", rail:"—", scr:"na", da:null, stage:"engage"},
+  {name:"Olam Uganda", loc:"Kampala, Uganda", role:"Exporter", supplies:"Robusta — Bugisu / Mt Elgon", desk:"Coffee", rail:"B", scr:"clear", da:null, stage:"contracted"},
+  {name:"Aricha Washing Station", loc:"Yirgacheffe, Ethiopia", role:"Producer", supplies:"Heirloom Grade 1 specialty", desk:"Coffee", rail:"B", scr:"clear", da:null, stage:"contracted"},
+  {name:"Moscow Commodities LLC", loc:"Moscow, Russia", role:"Buyer", supplies:"Buys specialty green — CONT-002", desk:"Coffee", rail:"B", scr:"req", da:null, stage:"shipping"},
+  {name:"PROWTC", loc:"Eastern Europe", role:"Broker", supplies:"Buys wet-polished A1/A2 — no disclosed end-client", desk:"Coffee", rail:"B", scr:"req", da:null, stage:"negotiating"},
+  {name:"KDV Group", loc:"Moscow, Russia", role:"Buyer", supplies:"Buys green — 50,000+ MT/yr", desk:"Coffee", rail:"B", scr:"req", da:null, stage:"quoting"},
+  {name:"Orimi Trade", loc:"St Petersburg, Russia", role:"Buyer", supplies:"Buys green — 40,000+ MT/yr", desk:"Coffee", rail:"B", scr:"req", da:null, stage:"prospect"},
+  {name:"Tiger Brands", loc:"Johannesburg, South Africa", role:"Buyer", supplies:"Buys oats, grain — Net 30/60 target", desk:"Oats &amp; Grain", rail:"A", scr:"clear", da:0.65, stage:"prospect"},
+  {name:"SIMISA Milling", loc:"Gauteng, South Africa", role:"Consortium", supplies:"Milling capacity — Level 1 B-BBEE, 4.9% confirmed", desk:"Wheat · Grain", rail:"A", scr:"clear", da:null, stage:"contracted"},
+  {name:"Grainstar AST", loc:"Jebel Ali, UAE", role:"Logistics", supplies:"Warehousing &amp; settlement — 2M t/yr", desk:"All", rail:"B", scr:"clear", da:null, stage:"contacted"},
+  {name:"Kalagadi Manganese", loc:"Northern Cape, South Africa", role:"Network entity", supplies:"Manganese — 960Mt resource", desk:"Adjacent", rail:"A", scr:"clear", da:0.72, stage:"prospect"},
+  {name:"COENG Engineers", loc:"South Africa", role:"Network entity", supplies:"EPC — battery &amp; energy", desk:"Adjacent", rail:"A", scr:"clear", da:0.68, stage:"negotiating"},
+  {name:"Studex Meat", loc:"Gauteng, South Africa", role:"Own vertical", supplies:"Wagyu / Ankole beef, biltong", desk:"Meat", rail:"A", scr:"clear", da:0.69, stage:"quoting"},
+  {name:"Studex Coffee", loc:"Johannesburg, South Africa", role:"Own vertical", supplies:"Roasted retail &amp; subscription", desk:"Coffee", rail:"A", scr:"clear", da:0.50, stage:"contracted"},
+  {name:"Studex Group", loc:"Johannesburg, South Africa", role:"Market maker", supplies:"Origination, documentation, screening, settlement", desk:"All", rail:"A / B", scr:"clear", da:0.66, stage:"core"}
+];
+
+const AGENTS = [
+  {state:"01 · ENQUIRY", name:"Hermes", role:"Origination", halt:false,
+   does:"Scans origin markets — coop capacity, harvest windows, washing-station output, supplier catalogues. Produces candidate lots with a grade claim attached.",
+   limit:"Cannot create a lot without a named seller and a corridor."},
+
+  {state:"02 · OFFER", name:"Naledi", role:"Structuring", halt:false,
+   does:"Maps grade to price band to buyer tier. Builds the offer: spec, volume, incoterm, MOQ. Coffee runs the NAEB scale; grain and meat run supplier specification.",
+   limit:"Cannot quote outside the published band without desk-head sign-off."},
+
+  {state:"03 · CONTRACT", name:"Charlie", role:"Counterparty Voice", halt:false,
+   does:"Outreach and quote-chasing across brokers and buyers, on whichever channel the counterparty actually uses — email, WhatsApp, Telegram.",
+   limit:"Cannot commit price or volume. Drafts only; a human signs."},
+
+  {state:"04 · SCREENING", name:"CSO", role:"Compliance", halt:true,
+   does:"Screens every counterparty against OFAC SDN, the EU consolidated list and UK HMT, plus a beneficial-ownership trace to the 50% rule. Re-run per shipment, never once per relationship.",
+   limit:"Blocking gate. May write a screening record; may never amend or delete one."},
+
+  {state:"05 · INSTRUMENT", name:"Money Mike", role:"Trade Finance", halt:true,
+   does:"Sizes the instrument to the ticket — letter of credit above $200K, Gulf intermediary $100–500K, telegraphic transfer below. Confirms the rail matches the corridor.",
+   limit:"Refuses any instrument on a Rail B corridor without a live cleared screening."},
+
+  {state:"06 · DOCUMENTS", name:"Robusca", role:"Documentary", halt:false,
+   does:"Assembles and checks the set — bill of lading, certificate of origin, phytosanitary, GOST-R and Halaal where the corridor requires them. Flags discrepancies before presentation.",
+   limit:"Cannot mark a set complete with a missing or expired certificate."},
+
+  {state:"07 · SHIPMENT", name:"Denchclaw", role:"Logistics", halt:false,
+   does:"Books the container, holds the port pair and the lead time, tracks the leg. Reefer for poultry, Handysize for bulk grain, 20ft for coffee.",
+   limit:"Cannot book against an unscreened counterparty on a Rail B corridor."},
+
+  {state:"08 · INSPECTION", name:"CAO", role:"Quality &amp; Data", halt:false,
+   does:"Coordinates SGS or Bureau Veritas, records cup scores, screen size, defect counts, moisture and impurity against the contracted spec.",
+   limit:"Records the result as found. Has no authority to waive a spec failure."},
+
+  {state:"09–10 · SETTLEMENT", name:"Cashclaw", role:"Settlement", halt:true,
+   does:"Releases payment against the inspection certificate and writes the settlement instruction — on-chain reference on Rail A, bank reference on Rail B, never both.",
+   limit:"Structurally cannot bridge a Rail B payment onto Rail A. Enforced in the schema, not in policy."},
+
+  {state:"OVERSIGHT", name:"Adam Smasher", role:"Desk Head", halt:false,
+   does:"Holds the book. Watches position and exposure — including unhedged longs like CONT-001, contracted at origin with no buyer allocated.",
+   limit:"Escalates to the chair above a set exposure. Does not self-authorise."}
+];
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const STAGE_BUCKET = {shipping:"live", contracted:"live", negotiating:"active", quoting:"active", contacted:"early", prospect:"early"};
+const RAIL_LABEL = {A:"RAIL A · ON-CHAIN", B:"RAIL B · DOCUMENTARY"};
+
+let fDesk = "all", fStage = "all", fRail = "all";
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+
+function lotCard(l){
+  const railCls = l.rail === "A" ? "a" : "b";
+  const price = l.price
+    ? `<span class="price-v">${l.price}<span style="font-size:11px;font-weight:500;color:var(--slate-light)">${l.unit}</span></span>`
+    : `<span class="price-v tbd">Price on application</span>`;
+  return `<article class="lot" data-desk="${l.desk}" data-stage="${STAGE_BUCKET[l.stage]}" data-rail="${l.rail}">
+    <div class="lot-top">
+      <div><div class="lot-id">${l.id}</div><div class="lot-origin">${l.origin}</div></div>
+      <span class="stage ${l.stage}">${l.stage}</span>
+    </div>
+    <div class="lot-name">${l.name}</div>
+    <div class="lot-seller">${l.seller}</div>
+    <div class="lot-price">${price}<span class="price-t">${l.basis}</span></div>
+    <div class="specs">${l.specs.map(s => `<div class="spec"><span class="spec-k">${s[0]}</span><span class="spec-v">${s[1]}</span></div>`).join("")}</div>
+    <div class="lot-foot"><span class="route">${l.route}</span><span class="rail ${railCls}">${l.rail}</span></div>
+  </article>`;
+}
+
+function renderLots(){
+  const rows = LOTS.filter(l =>
+    (fDesk === "all" || l.desk === fDesk) &&
+    (fStage === "all" || STAGE_BUCKET[l.stage] === fStage) &&
+    (fRail === "all" || l.rail === fRail)
+  );
+  $("#lots").innerHTML = rows.length
+    ? rows.map(lotCard).join("")
+    : `<div class="empty">No lots match this filter. Widen the stage or rail selection.</div>`;
+}
+
+function renderCounts(){
+  $$("[data-count]").forEach(el => {
+    const d = el.dataset.count;
+    el.textContent = d === "all" ? LOTS.length : LOTS.filter(l => l.desk === d).length;
+  });
+}
+
+function renderCorridors(){
+  $("#corridor-grid").innerHTML = CORRIDORS.map(c => {
+    const nodes = c.nodes.map((n, i) => {
+      const cls = i === 0 ? "o" : (i === c.nodes.length - 1 ? "d" : "");
+      return `<span class="node ${cls}">${n}</span>`;
+    }).join(`<span class="arr">→</span>`);
+    return `<article class="corr">
+      <div class="corr-id">${c.id}</div>
+      <div class="leg">${nodes}</div>
+      <h3 class="corr-title">${c.title}</h3>
+      <p class="sec-sub" style="font-size:12.5px">${c.note}</p>
+      <div class="corr-meta">${c.meta.map(m => `<div class="spec"><span class="spec-k">${m[0]}</span><span class="spec-v">${m[1]}</span></div>`).join("")}</div>
+    </article>`;
+  }).join("");
+}
+
+function renderCps(){
+  const SCR_TXT = {clear:"CLEAR", req:"REQUIRED", na:"N/A"};
+  $("#cps").innerHTML = CPS.map(c => {
+    const da = c.da
+      ? `<div class="da"><div class="da-bar"><div class="da-fill" style="width:${Math.round(c.da * 100)}%"></div></div><span class="da-n">${c.da.toFixed(2)}</span></div>`
+      : `<span style="color:var(--slate-light);font-size:11px">not scored</span>`;
+    return `<tr>
+      <td><div class="cp-name">${c.name}</div><div class="cp-loc">${c.loc}</div></td>
+      <td>${c.role}</td>
+      <td style="max-width:280px">${c.supplies}</td>
+      <td>${c.desk}</td>
+      <td class="mono" style="font-weight:600">${c.rail}</td>
+      <td><span class="scr ${c.scr}">${SCR_TXT[c.scr]}</span></td>
+      <td>${da}</td>
+      <td><span class="stage ${c.stage}" style="text-transform:uppercase">${c.stage}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+function renderAgents(){
+  $("#agent-grid").innerHTML = AGENTS.map(a => `<article class="agent${a.halt ? " gate" : ""}">
+    ${a.halt ? '<span class="halt">CAN HALT</span>' : ""}
+    <div class="agent-state">${a.state}</div>
+    <div class="agent-name">${a.name}</div>
+    <div class="agent-role">${a.role}</div>
+    <p class="agent-does">${a.does}</p>
+    <div class="agent-limit"><b>Limit</b>${a.limit}</div>
+  </article>`).join("");
+}
+
+/* interactions */
+$$(".desk").forEach(b => b.addEventListener("click", () => {
+  $$(".desk").forEach(x => x.setAttribute("aria-selected", "false"));
+  b.setAttribute("aria-selected", "true");
+  fDesk = b.dataset.desk;
+  renderLots();
+}));
+
+$$("[data-stage]").forEach(b => b.addEventListener("click", () => {
+  $$("[data-stage]").forEach(x => x.setAttribute("aria-pressed", "false"));
+  b.setAttribute("aria-pressed", "true");
+  fStage = b.dataset.stage;
+  renderLots();
+}));
+
+$$("[data-rail]").forEach(b => b.addEventListener("click", () => {
+  $$("[data-rail]").forEach(x => x.setAttribute("aria-pressed", "false"));
+  b.setAttribute("aria-pressed", "true");
+  fRail = b.dataset.rail;
+  renderLots();
+}));
+
+renderCounts();
+renderLots();
+renderCorridors();
+renderAgents();
+renderCps();
+</script>
+</body>
+</html>
